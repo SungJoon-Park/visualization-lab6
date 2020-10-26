@@ -48,6 +48,16 @@ export default function AreaChart(container) {
         .append('g')
         .attr('class', 'axis y-axis');
 
+    // on & listener
+    const listeners = {
+        brushed: null
+    };
+
+    function on(event, listener) {
+        listeners[event] = listener;
+    }
+
+    // brush
     const brush = d3
         .brushX()
         .extent([
@@ -58,9 +68,6 @@ export default function AreaChart(container) {
 
     group.append("g").attr('class', 'brush').call(brush);
 
-    const listeners = {
-        brushed: null
-    };
 
     function brushed(event) {
         const dataRange = event.selection.map(xScale.invert);
@@ -103,10 +110,6 @@ export default function AreaChart(container) {
             .attr('fill', "#1f77b4")
             .attr('d', area);
 
-    }
-
-    function on(event, listener) {
-        listeners[event] = listener;
     }
 
     return {
