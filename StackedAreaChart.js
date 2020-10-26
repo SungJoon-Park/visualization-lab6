@@ -1,5 +1,8 @@
 export default function StackedAreaChart(container) {
     // initialization
+    let selected = null,
+        xDomain, data;
+
     // create svg with margin convention
     const margin = {
             top: 20,
@@ -51,13 +54,10 @@ export default function StackedAreaChart(container) {
         .attr('x', 60)
         .attr('y', 20)
         .style('font-size', 12)
-        .style('font-style','san-serif')
-        .style('font-weight','bolder');
+        .style('font-style', 'san-serif')
+        .style('font-weight', 'bolder');
 
-
-    let selected = null,
-        xDomain, data;
-
+    // on & listener
     const listeners = {
         zoomed: null
     };
@@ -66,6 +66,7 @@ export default function StackedAreaChart(container) {
         listeners[event] = listener;
     }
 
+    // zoom
     group
         .call(d3.zoom()
             .extent([
@@ -101,6 +102,7 @@ export default function StackedAreaChart(container) {
         .attr('width', width)
         .attr('height', height);
 
+    // update
     function update(_data) {
         data = _data;
         const keys = selected ? [selected] : data.columns.slice(1);
