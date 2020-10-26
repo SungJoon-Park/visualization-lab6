@@ -50,7 +50,9 @@ export default function StackedAreaChart(container) {
         .append('text')
         .attr('x', 60)
         .attr('y', 20)
-        .attr('font-size', 12);
+        .style('font-size', 12)
+        .style('font-style','san-serif')
+        .style('font-weight','bolder');
 
 
     let selected = null,

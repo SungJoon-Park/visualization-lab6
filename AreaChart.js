@@ -67,7 +67,6 @@ export default function AreaChart(container) {
 
         if (event.selection) {
             listeners["brushed"](dataRange);
-            console.log(event.selection);
         }
     }
 
@@ -101,6 +100,7 @@ export default function AreaChart(container) {
 
         d3.select('.area')
             .datum(data)
+            .attr('fill', "#1f77b4")
             .attr('d', area);
 
     }

@@ -12,7 +12,6 @@ d3.csv('unemployment.csv', d3.autoType).then(data => {
         row.forEach(element => sum += d[element]);
         d.total = sum;
     });
-    console.log(unemployment[0]);
 
 
     const areaChart1 = AreaChart(".area_chart");
