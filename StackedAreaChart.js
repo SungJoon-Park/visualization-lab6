@@ -52,8 +52,20 @@ export default function StackedAreaChart(container) {
         .attr('y', 20)
         .attr('font-size', 12);
 
-    function update(data) {
-        let keys = data.columns.slice(1);
+
+    let selected = null,
+        xDomain, data;
+
+    let clips = group
+        .append('clipPath')
+        .attr('id', 'clip-area')
+        .append('rect')
+        .attr('width', width)
+        .attr('height', height);
+
+    function update(_data) {
+        data = _data;
+        const keys = selected ? [selected] : data.columns.slice(1);
         let stack = d3.stack()
             .keys(keys)
             .order(d3.stackOrderNone)
@@ -61,8 +73,8 @@ export default function StackedAreaChart(container) {
 
         let stackedData = stack(data);
         // update scales, encodings, axes (use the total count)
-        xScale.domain(d3.extent(data, d => d.date));
-        yScale.domain([0, d3.max(stackedData, d => d3.max(d, d => d[1]))]);
+        xScale.domain(xDomain ? xDomain : d3.extent(data, (d) => d.date));
+        yScale.domain([0, d3.max(stackedData, (d) => d3.max(d, (d) => d[1]))]);
         cScale.domain(keys);
 
         xDisplay
@@ -74,29 +86,45 @@ export default function StackedAreaChart(container) {
 
 
         let area = d3.area()
-            .x(d => xScale(d.data.date))
-            .y1(d => yScale(d[1]))
+            .x((d) => xScale(d.data.date))
+            .y1((d) => yScale(d[1]))
             .y0((d) => yScale(d[0]));
 
         const areas = group.selectAll('.area')
-            .data(stackedData, d => d.key);
+            .data(stackedData, (d) => d.key);
 
         areas
             .enter()
             .append('path')
+            .style('clip-path', 'url(#clip-area)')
             .attr('class', 'area')
-            .style('fill', d => cScale(d.key))
-            .merge(areas)
+            .style('fill', (d) => cScale(d.key))
             .on('mouseover', (event, d, i) => tooltip.text(d.key))
             .on('mouseout', (event, d, i) => tooltip.text(''))
+            .on('click', (event, d) => {
+                if (selected === d.key) {
+                    selected = null;
+                } else {
+                    selected = d.key;
+                }
+                update(data);
+            })
+            .merge(areas)
             .attr('d', area);
+
 
         areas
             .exit()
             .remove();
+    }
 
+    function filterByDate(range) {
+        xDomain = range;
+        update(data);
     }
+
     return {
-        update
-    }
+        update,
+        filterByDate
+    };
 }

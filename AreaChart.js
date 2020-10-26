@@ -48,11 +48,38 @@ export default function AreaChart(container) {
         .append('g')
         .attr('class', 'axis y-axis');
 
+    const brush = d3
+        .brushX()
+        .extent([
+            [0, 0],
+            [width, height]
+        ])
+        .on('brush', brushed)
+        .on('end', brushed);
+
+    group.append("g").attr('class', 'brush').call(brush);
+
+    const listeners = {
+        brushed: null
+    };
+
+    function brushed(event) {
+        const dataRange = event.selection.map(xScale.invert);
+
+        if (event.selection) {
+            listeners["brushed"](dataRange);
+            console.log(event.selection);
+        }
+
+
+
+    }
+
     function update(data) {
 
         // update scales, encodings, axes (use the total count)
-        xScale.domain(d3.extent(data, d => d.date));
-        yScale.domain([0, d3.max(data, d => d.total)]);
+        xScale.domain(d3.extent(data, (d) => d.date));
+        yScale.domain([0, d3.max(data, (d) => d.total)]);
 
         xDisplay
             .attr("transform", `translate(0, ${height})`)
@@ -73,8 +100,13 @@ export default function AreaChart(container) {
 
     }
 
+    function on(event, listener) {
+        listeners[event] = listener;
+    }
+
     return {
-        update // ES6 shorthand for "update": update
+        update,
+        on // ES6 shorthand for "update": update
     };
 
 }
