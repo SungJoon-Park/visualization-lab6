@@ -56,7 +56,8 @@ export default function StackedAreaChart(container) {
     let selected = null,
         xDomain, data;
 
-    let clips = group
+    // clip for stacked chart
+    svg
         .append('clipPath')
         .attr('id', 'clip-area')
         .append('rect')
