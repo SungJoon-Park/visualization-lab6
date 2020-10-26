@@ -56,8 +56,43 @@ export default function StackedAreaChart(container) {
     let selected = null,
         xDomain, data;
 
+    const listeners = {
+        zoomed: null
+    };
+
+    function on(event, listener) {
+        listeners[event] = listener;
+    }
+
+    group
+        .call(d3.zoom()
+            .extent([
+                [0, 0],
+                [width, height]
+            ])
+            .translateExtent([
+                [0, -Infinity],
+                [width, Infinity]
+            ]) // we don't care the y-extent
+            .scaleExtent([1, 4])
+            .on("zoom", zoomed));
+
+    function zoomed({
+        transform
+    }) {
+        const copy = xScale.copy().domain(
+            d3.extent(data, (d) => d.date)
+        );
+        const rescaled = transform.rescaleX(copy);
+        xDomain = rescaled.domain();
+        update(data);
+        if (listeners['zoomed']) {
+            listeners['zoomed'](xDomain);
+        }
+    }
+
     // clip for stacked chart
-    svg
+    group
         .append('clipPath')
         .attr('id', 'clip-area')
         .append('rect')
@@ -126,6 +161,7 @@ export default function StackedAreaChart(container) {
 
     return {
         update,
-        filterByDate
+        filterByDate,
+        on
     };
 }

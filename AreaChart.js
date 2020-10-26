@@ -54,8 +54,7 @@ export default function AreaChart(container) {
             [0, 0],
             [width, height]
         ])
-        .on('brush', brushed)
-        .on('end', brushed);
+        .on('brush', brushed);
 
     group.append("g").attr('class', 'brush').call(brush);
 
@@ -70,10 +69,16 @@ export default function AreaChart(container) {
             listeners["brushed"](dataRange);
             console.log(event.selection);
         }
-
-
-
     }
+
+    function setBrush(timeRange) {
+        let range = timeRange.map(xScale);
+        group
+            .select(".brush")
+            .call(brush.move, range);
+    }
+
+
 
     function update(data) {
 
@@ -106,7 +111,8 @@ export default function AreaChart(container) {
 
     return {
         update,
-        on // ES6 shorthand for "update": update
+        on,
+        setBrush
     };
 
 }
