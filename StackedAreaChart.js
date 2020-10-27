@@ -156,7 +156,6 @@ export default function StackedAreaChart(container) {
                     selected = null;
                 } else {
                     selected = d.key;
-
                 }
                 update(data);
             });
