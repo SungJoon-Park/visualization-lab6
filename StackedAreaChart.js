@@ -145,9 +145,9 @@ export default function StackedAreaChart(container) {
             .append('path')
             .style('clip-path', 'url(#clip-area)')
             .attr('class', 'area')
-            .style('fill', (d) => cScale(d.key))
             .merge(areas)
             .attr('d', area)
+            .style('fill', (d) => cScale(d.key))
             .on('mouseover', (event, d, i) => tooltip.text(d.key))
             .on('mouseout', (event, d, i) => tooltip.text(''))
             .on('click', (event, d) => {
