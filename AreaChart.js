@@ -64,16 +64,23 @@ export default function AreaChart(container) {
             [0, 0],
             [width, height]
         ])
-        .on('brush', brushed);
+        .on('brush', brushed)
+        .on('end', brushended);
 
     group.append("g").attr('class', 'brush').call(brush);
-
 
     function brushed(event) {
         const dataRange = event.selection.map(xScale.invert);
 
         if (event.selection) {
             listeners["brushed"](dataRange);
+        }
+    }
+
+    function brushended(event) {
+        const dataRange = [xScale.invert(0), xScale.invert(width)];
+        if (!event.selection) {
+            listeners['brushed'](dataRange);
         }
     }
 
