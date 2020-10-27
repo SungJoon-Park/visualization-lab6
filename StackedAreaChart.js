@@ -13,32 +13,37 @@ export default function StackedAreaChart(container) {
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
-    let svg = d3
+    const svg = d3
         .select(container)
         .append('svg')
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
-    let group = svg
+    const group = svg
         .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
     // create scales without domains
-    let xScale = d3.scaleTime()
+    const xScale = d3
+        .scaleTime()
         .range([0, width]);
 
-    let yScale = d3.scaleLinear()
+    const yScale = d3
+        .scaleLinear()
         .range([height, 0]);
 
-    let cScale = d3.scaleOrdinal()
+    const cScale = d3
+        .scaleOrdinal()
         .range(d3.schemeTableau10);
 
 
     // create axes and axis title containers
-    const xAxis = d3.axisBottom()
+    const xAxis = d3
+        .axisBottom()
         .scale(xScale);
 
-    const yAxis = d3.axisLeft()
+    const yAxis = d3
+        .axisLeft()
         .scale(yScale);
 
     let xDisplay = group
@@ -78,7 +83,8 @@ export default function StackedAreaChart(container) {
                 [width, Infinity]
             ]) // we don't care the y-extent
             .scaleExtent([1, 4])
-            .on("zoom", zoomed));
+            .on("zoom", zoomed)
+        );
 
     function zoomed({
         transform
@@ -106,7 +112,9 @@ export default function StackedAreaChart(container) {
     function update(_data) {
         data = _data;
         const keys = selected ? [selected] : data.columns.slice(1);
-        let stack = d3.stack()
+
+        let stack = d3
+            .stack()
             .keys(keys)
             .order(d3.stackOrderNone)
             .offset(d3.stackOffsetNone);
@@ -114,7 +122,7 @@ export default function StackedAreaChart(container) {
         let stackedData = stack(data);
         // update scales, encodings, axes (use the total count)
         xScale.domain(xDomain ? xDomain : d3.extent(data, (d) => d.date));
-        yScale.domain([0, d3.max(stackedData, (d) => d3.max(d, (d) => d[1]))]);
+        yScale.domain([0, d3.max(stackedData, (a) => d3.max(a, (d) => d[1]))]);
         cScale.domain(keys);
 
         xDisplay
@@ -138,6 +146,8 @@ export default function StackedAreaChart(container) {
             .append('path')
             .style('clip-path', 'url(#clip-area)')
             .attr('class', 'area')
+            .merge(areas)
+            .attr('d', area)
             .style('fill', (d) => cScale(d.key))
             .on('mouseover', (event, d, i) => tooltip.text(d.key))
             .on('mouseout', (event, d, i) => tooltip.text(''))
@@ -146,11 +156,11 @@ export default function StackedAreaChart(container) {
                     selected = null;
                 } else {
                     selected = d.key;
+
                 }
                 update(data);
-            })
-            .merge(areas)
-            .attr('d', area);
+            });
+
 
 
         areas
