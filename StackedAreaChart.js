@@ -132,7 +132,6 @@ export default function StackedAreaChart(container) {
         yDisplay
             .call(yAxis);
 
-
         let area = d3.area()
             .x((d) => xScale(d.data.date))
             .y1((d) => yScale(d[1]))
